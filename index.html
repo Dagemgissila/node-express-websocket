@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>WebSocket Live Test Rig</title>
+
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 20px;
+      background: #121212;
+      color: #fff;
+    }
+
+    h1 {
+      margin-bottom: 10px;
+    }
+
+    #status {
+      margin-bottom: 15px;
+      font-weight: bold;
+    }
+
+    .status-on {
+      color: #00ff00;
+    }
+
+    .status-off {
+      color: #ff0000;
+    }
+
+    #log {
+      background: #000;
+      padding: 10px;
+      height: 300px;
+      overflow-y: scroll;
+      border: 1px solid #333;
+      margin-bottom: 15px;
+    }
+
+    #message-form {
+      display: flex;
+      gap: 10px;
+    }
+
+    #message-input {
+      flex: 1;
+      padding: 10px;
+      border: none;
+      outline: none;
+    }
+
+    button {
+      padding: 10px 15px;
+      background: #00ff00;
+      border: none;
+      cursor: pointer;
+      font-weight: bold;
+    }
+  </style>
+</head>
+
+<body>
+
+  <h1>WebSocket Broadcast Console</h1>
+
+  <p id="status" class="status-off">Connecting...</p>
+
+  <div id="log"></div>
+
+  <form id="message-form">
+    <input 
+      id="message-input" 
+      type="text" 
+      placeholder="Send message..." 
+      required 
+    />
+    <button type="submit">Send</button>
+  </form>
+
+  <script>
+    const statusEl = document.getElementById("status");
+    const logEl = document.getElementById("log");
+    const form = document.getElementById("message-form");
+    const input = document.getElementById("message-input");
+
+    const socket = new WebSocket("ws://localhost:8080");
+
+    // Helper to log messages
+    function log(message) {
+      const div = document.createElement("div");
+      div.textContent = message;
+      logEl.appendChild(div);
+      logEl.scrollTop = logEl.scrollHeight;
+    }
+
+    // Connection opened
+    socket.onopen = () => {
+      statusEl.textContent = "Connected ✅";
+      statusEl.classList.remove("status-off");
+      statusEl.classList.add("status-on");
+      log("Connected to server");
+    };
+
+    // Receive message
+    socket.onmessage = (event) => {
+
+      log("Server: " + event.data);
+    };
+
+    // Connection closed
+    socket.onclose = () => {
+      statusEl.textContent = "Disconnected ❌";
+      statusEl.classList.remove("status-on");
+      statusEl.classList.add("status-off");
+      log("Disconnected from server");
+    };
+
+    // Error
+    socket.onerror = (err) => {
+      log("Error occurred");
+      console.error(err);
+    };
+
+    // Send message
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+
+      const message = input.value;
+
+      if (socket.readyState === WebSocket.OPEN) {
+        socket.send(message);
+        log("You: " + message);
+      } else {
+        log("Connection not open");
+      }
+
+      input.value = "";
+    });
+  </script>
+
+</body>
+</html>
