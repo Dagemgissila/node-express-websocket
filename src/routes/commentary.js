@@ -3,6 +3,7 @@ import { eq, desc } from "drizzle-orm";
 import { matchIdParamSchema } from "../validation/matches.js";
 import { createCommentarySchema, listCommentaryQuerySchema } from "../validation/commentary.js";
 import { db } from "../db.js";
+import { commentary } from "../schema.js";
 
 const MAX_LIMIT = 100;
 

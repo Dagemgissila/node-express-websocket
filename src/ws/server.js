@@ -94,7 +94,6 @@ export function attachWebSocketServer(server) {
     });
 
     wss.on('connection', async (socket, req) => {
-        console.log("new connection", socket)
         socket.isAlive = true;
         socket.on('pong', () => { socket.isAlive = true; });
 

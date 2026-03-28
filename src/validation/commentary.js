@@ -27,6 +27,6 @@ export const createCommentarySchema = z.object({
   message: z.string().trim().min(1, "Message is required").describe("The human-readable commentary text"),
 
   // Data Buckets
-  metadata: z.record(z.unknown()).default({}).describe("Flexible key-value pairs for technical details"),
+  metadata: z.record(z.string(), z.unknown()).default({}).describe("Flexible key-value pairs for technical details"),
   tags: z.array(z.string()).default([]).describe("Searchable tags (e.g., ['important', 'var'])"),
 });
