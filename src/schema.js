@@ -1,28 +1,33 @@
-import { pgTable, serial, text, timestamp, integer, jsonb, pgEnum } from 'drizzle-orm/pg-core';
+import { pgTable, serial, text, integer, timestamp, pgEnum, jsonb } from 'drizzle-orm/pg-core';
 
-// Enum for Match Status
-export const statusEnum = pgEnum('match_status', ['scheduled', 'live', 'finished']);
+export const matchStatusEnum = pgEnum('match_status', ['scheduled', 'live', 'finished']);
 
-// MATCH Table (Static/Anchor)
 export const matches = pgTable('matches', {
   id: serial('id').primaryKey(),
+  sport: text('sport').notNull(),
   homeTeam: text('home_team').notNull(),
   awayTeam: text('away_team').notNull(),
-  sport: text('sport').notNull(),
-  startTime: timestamp('start_time').notNull(),
-  status: statusEnum('status').default('scheduled').notNull(),
-  homeScore: integer('home_score').default(0).notNull(),
-  awayScore: integer('away_score').default(0).notNull(),
+  status: matchStatusEnum('status').notNull().default('scheduled'),
+  startTime: timestamp('start_time'),
+  endTime: timestamp('end_time'),
+  homeScore: integer('home_score').notNull().default(0),
+  awayScore: integer('away_score').notNull().default(0),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
 });
 
-// COMMENTARY Table (Dynamic/Story/Events)
-export const commentaries = pgTable('commentaries', {
+export const commentary = pgTable('commentary', {
   id: serial('id').primaryKey(),
-  matchId: integer('match_id').notNull().references(() => matches.id, { onDelete: 'cascade' }),
-  actor: text('actor'), // Who (e.g., Player Name, Referee)
-  message: text('message').notNull(), // What (The commentary text)
-  minute: integer('minute'), // When (Minute in the match)
-  sequenceNo: integer('sequence_no').notNull(), // Order
-  details: jsonb('details'), // Flexible JSON bucket (Anything Bucket)
-  createdAt: timestamp('created_at').defaultNow().notNull(),
+  matchId: integer('match_id')
+    .notNull()
+    .references(() => matches.id),
+  minute: integer('minute'),
+  sequence: integer('sequence'),
+  period: text('period'),
+  eventType: text('event_type'),
+  actor: text('actor'),
+  team: text('team'),
+  message: text('message').notNull(),
+  metadata: jsonb('metadata'),
+  tags: text('tags').array(),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
 });
