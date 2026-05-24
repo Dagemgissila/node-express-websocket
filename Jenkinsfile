@@ -2,7 +2,11 @@ environment {
     PATH = "/usr/local/node/bin:/usr/bin:/bin"
 }
 pipeline {
-    agent any
+        agent {
+        docker {
+            image 'node:22'
+        }
+    }
 
     environment {
         IMAGE_NAME = "dagi27/websocket-app"
