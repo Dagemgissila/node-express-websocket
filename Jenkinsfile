@@ -17,19 +17,6 @@ pipeline {
             }
         }
 
-        stage('Install Dependencies') {
-            steps {
-                echo "📦 Installing npm packages..."
-                sh 'npm install'
-            }
-        }
-
-        stage('Run Database Migrations') {
-            steps {
-                echo "🗄️ Running Drizzle migrations..."
-                sh 'npm run migrate || true'
-            }
-        }
 
         stage('Build Docker Image') {
             steps {
