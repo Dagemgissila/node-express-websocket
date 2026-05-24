@@ -20,5 +20,5 @@ app.use("/matches", matchRouter);
 
 server.listen(PORT, HOST, () => {
   const baseUrl =HOST=== "0.0.0.0" ?  `http://${HOST}:${PORT}` : `http://localhost:${PORT}`;
-  console.log(`Server is running at  .......... ${baseUrl}`);
+  console.log(`Server is running at   ${baseUrl}`);
 });
