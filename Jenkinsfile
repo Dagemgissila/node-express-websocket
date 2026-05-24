@@ -1,3 +1,6 @@
+environment {
+    PATH = "/usr/local/node/bin:/usr/bin:/bin"
+}
 pipeline {
     agent any
 
