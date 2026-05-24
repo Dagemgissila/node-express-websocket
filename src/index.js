@@ -3,12 +3,20 @@ import { matchRouter } from "./routes/matches.js";
 import http from "http";
 import { attachWebSocketServer } from "./ws/server.js";
 import { commentaryRouter } from "./routes/commentary.js";
+import cors from "cors"
 
 const app = express();
 const PORT = Number(process.env.PORT || 8000);
 const HOST = process.env.HOST
 
-
+app.use(
+  cors({
+    origin: process.env.CLIENT_URL || "http://localhost:3000",
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
 // JSON middleware
 app.use(express.json());
 const server = http.createServer(app)
