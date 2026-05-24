@@ -1,12 +1,5 @@
-environment {
-    PATH = "/usr/local/node/bin:/usr/bin:/bin"
-}
 pipeline {
-        agent {
-        docker {
-            image 'node:22'
-        }
-    }
+    agent any
 
     environment {
         IMAGE_NAME = "dagi27/websocket-app"
@@ -34,7 +27,7 @@ pipeline {
         stage('Run Database Migrations') {
             steps {
                 echo "🗄️ Running Drizzle migrations..."
-                sh 'npm run migrate || echo "No migration script found"'
+                sh 'npm run migrate || true'
             }
         }
 
@@ -60,7 +53,7 @@ pipeline {
             }
         }
 
-        stage('Push Image to Docker Hub') {
+        stage('Push Image') {
             steps {
                 echo "📤 Pushing image..."
                 sh "docker push $IMAGE_NAME:latest"
@@ -69,7 +62,6 @@ pipeline {
 
         stage('Stop Old Container') {
             steps {
-                echo "🛑 Stopping old container (if exists)..."
                 sh "docker stop $CONTAINER_NAME || true"
                 sh "docker rm $CONTAINER_NAME || true"
             }
@@ -77,12 +69,11 @@ pipeline {
 
         stage('Run New Container') {
             steps {
-                echo "🚀 Running new container..."
+                echo "🚀 Deploying container..."
                 sh """
                     docker run -d \
                     --name $CONTAINER_NAME \
                     -p $PORT:3000 \
-                    --env-file .env \
                     $IMAGE_NAME:latest
                 """
             }
@@ -95,7 +86,7 @@ pipeline {
         }
 
         failure {
-            echo "❌ Deployment failed. Check logs."
+            echo "❌ Deployment failed"
         }
     }
 }
